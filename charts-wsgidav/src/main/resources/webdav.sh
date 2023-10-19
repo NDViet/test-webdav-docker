@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-wsgidav --config=/webdav/config.yaml
+wsgidav --server=${SERVER} --port=${SERVER_PORT} --root=${ROOT_PATH} --config=${CONFIG_FILE}
