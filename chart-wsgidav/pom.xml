@@ -9,7 +9,7 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>docker-wsgidav</artifactId>
+    <artifactId>chart-wsgidav</artifactId>
 
     <build>
         <plugins>
@@ -18,13 +18,13 @@
                 <artifactId>templating-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>docker-src-template</id>
+                        <id>chart-src-template</id>
                         <phase>initialize</phase>
                         <goals>
                             <goal>filter-sources</goal>
                         </goals>
                         <configuration>
-                            <sourceDirectory>${basedir}/src/main/docker</sourceDirectory>
+                            <sourceDirectory>${basedir}/src/main/resources</sourceDirectory>
                             <outputDirectory>${project.build.directory}/classes</outputDirectory>
                         </configuration>
                     </execution>
@@ -32,33 +32,18 @@
             </plugin>
 
             <plugin>
-                <groupId>io.fabric8</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
+                <groupId>io.kokuwa.maven</groupId>
+                <artifactId>helm-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>build-image</id>
-                        <goals>
-                            <goal>build</goal>
-                            <goal>tag</goal>
-                        </goals>
+                        <id>helm-package</id>
                         <phase>package</phase>
+                        <goals>
+                            <goal>lint</goal>
+                            <goal>package</goal>
+                        </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <buildArgs>
-                        <version>${wsgidav.image.tag}</version>
-                    </buildArgs>
-                    <images>
-                        <image>
-                            <name>${wsgidav.image.registry}/${wsgidav.image.name}:${wsgidav.image.tag}</name>
-                            <build>
-                                <contextDir>${project.build.directory}/classes</contextDir>
-                            </build>
-                        </image>
-                    </images>
-                    <repo>${wsgidav.image.registry}</repo>
-                    <tagName>${wsgidav.image.tag}</tagName>
-                </configuration>
             </plugin>
         </plugins>
     </build>

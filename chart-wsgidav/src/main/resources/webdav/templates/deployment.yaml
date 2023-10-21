@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "webdav.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: &webdav_labels
+    app: {{ template "webdav.name" . }}
+    chart: {{ template "webdav.chart" . }}
+    release: {{ .Release.Name }}
+    namespace: {{ .Release.Namespace }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "webdav.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels: *webdav_labels
+    spec:
+      containers:
+        - name: webdav
+          image: {{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          {{- with .Values.extraEnvironmentVariables }}
+            {{- tpl (toYaml .) $ | nindent 12 }}
+          {{- end }}
+        {{- with .Values.extraEnvFrom }}
+          envFrom:
+              {{- tpl (toYaml .) $ | nindent 12 }}
+        {{- end }}
+          ports:
+            - name: http-port
+              containerPort: {{ .Values.service.httpPort }}
+              protocol: TCP
+          volumeMounts:
+            - name: configuration
+              mountPath: /opt/bin/config.yaml
+              subPath: config.yaml
+            - name: data
+              mountPath: /share
+      volumes:
+        - name: configuration
+          configMap:
+            name: {{ template "webdav.fullname" . }}-config
+            defaultMode: 0511
+        - name: data
+        {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim | default (include "webdav.fullname" .) }}
+        {{- else }}
+          emptyDir: {}
+        {{- end -}}

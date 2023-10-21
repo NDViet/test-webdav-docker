@@ -1,0 +1,29 @@
+{{- if and .Values.persistence.enabled (not .Values.persistence.existingClaim) -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "webdav.fullname" . }}
+  labels:
+    app: {{ template "webdav.name" . }}
+    chart: {{ template "webdav.chart" . }}
+    release: {{ .Release.Name }}
+    namespace: {{ .Release.Namespace }}
+    heritage: {{ .Release.Service }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.accessModes | quote }}
+  resources:
+    requests:
+    {{- if not .Values.persistence.size }}
+      storage: 100Mi
+    {{- else }}
+      storage: {{ .Values.persistence.size | quote }}
+    {{- end }}
+  {{- if .Values.persistence.storageClass }}
+  {{- if (eq "-" .Values.persistence.storageClass) }}
+  storageClassName: ""
+  {{- else }}
+  storageClassName: {{ .Values.persistence.storageClass | quote }}
+  {{- end }}
+  {{- end }}
+{{- end }}

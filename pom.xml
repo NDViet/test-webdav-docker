@@ -6,17 +6,60 @@
 
     <groupId>org.ndviet</groupId>
     <artifactId>test-webdav-docker</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
     <modules>
         <module>docker-wsgidav</module>
-        <module>charts-wsgidav</module>
+        <module>chart-wsgidav</module>
     </modules>
 
     <properties>
+        <revision>4.3.0</revision>
+        <wsgidav.image.registry>ndviet</wsgidav.image.registry>
+        <wsgidav.version>${revision}</wsgidav.version>
+        <wsgidav.image.registry>ndviet</wsgidav.image.registry>
+        <wsgidav.image.name>webdav</wsgidav.image.name>
+        <wsgidav.image.tag>wsgidav-${wsgidav.version}</wsgidav.image.tag>
+        <dockerfile.based.image>python:3.12-alpine3.18</dockerfile.based.image>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>templating-maven-plugin</artifactId>
+                    <version>1.0.0</version>
+                    <extensions>true</extensions>
+                </plugin>
+
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>0.43.4</version>
+                    <extensions>true</extensions>
+                </plugin>
+
+                <plugin>
+                    <groupId>io.kokuwa.maven</groupId>
+                    <artifactId>helm-maven-plugin</artifactId>
+                    <version>6.11.0</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <chartDirectory>${project.build.directory}/classes</chartDirectory>
+                        <chartVersion>${project.version}</chartVersion>
+                        <outputDirectory>${project.build.directory}/helm/repo</outputDirectory>
+                        <useLocalHelmBinary>true</useLocalHelmBinary>
+                        <autoDetectLocalHelmBinary>true</autoDetectLocalHelmBinary>
+                        <lintStrict>true</lintStrict>
+                        <addDefaultRepo>false</addDefaultRepo>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
 </project>
