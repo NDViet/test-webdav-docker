@@ -1,12 +1,12 @@
 persistence:
   enabled: true
-  existingClaim: selenium-node
+  existingClaim:
   size: 15Gi
   accessModes: ReadWriteMany
   pv:
     enabled: true
     hostPath:
-      path: /testops/local/selenium
+      path: /testops/local/webdav
 
 image:
   registry: ${wsgidav.image.registry}
@@ -19,24 +19,20 @@ service:
   httpPort: 8080
   #httpNodePort: 30080
 
-extraEnvironmentVariables:
-  - name: CONFIG_FILE
-    value: /opt/bin/config.yaml
-  - name: ROOT_PATH
-    value: /share
-  - name: SERVER
-    value: cheroot
-extraEnvFrom:
-  - configMapRef:
-      name: '{{ template "webdav.fullname" . }}-config'
+#extraEnvironmentVariables:
+#extraEnvFrom:
+#extraVolumeMounts:
+#extraVolumes:
 
-configs: |-
+host: 0.0.0.0
+server: cheroot
+rootPath: /share
+configFileName: config.yaml
+configFileYaml: |-
   simple_dc:
     user_mapping:
       '*':  true
-  
   provider_mapping: {}
-  
   dir_browser:
     enable: true
     ignore:

@@ -1,25 +1,7 @@
-server: cheroot
-host: 0.0.0.0
-
 simple_dc:
   user_mapping:
     '*':  true
 
-provider_mapping: {}
-
 dir_browser:
   enable: true
-  ignore:
-    - '.DS_Store'
-    - 'Thumbs.db'
-    - '._*'
-  directory_slash: false
   icon: false
-  response_trailer: false
-  show_user: false
-  show_logout: true
-  davmount: false
-  davmount_links: false
-  ms_sharepoint_support: true
-  libre_office_support: true
-  htdocs_path: null

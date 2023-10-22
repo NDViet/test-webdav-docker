@@ -24,32 +24,52 @@ spec:
           image: {{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            - name: HOST
+              value: {{ .Values.host | quote }}
+            - name: SERVER
+              value: {{ .Values.server | quote }}
+            - name: ROOT_PATH
+              value: {{ .Values.rootPath | quote }}
+            - name: SERVER_PORT
+              value: {{ .Values.service.httpPort | quote }}
+            - name: CONFIG_FILE
+              value: {{ .Values.configFileName | quote }}
           {{- with .Values.extraEnvironmentVariables }}
             {{- tpl (toYaml .) $ | nindent 12 }}
           {{- end }}
-        {{- with .Values.extraEnvFrom }}
+          {{- with .Values.extraEnvFrom }}
           envFrom:
-              {{- tpl (toYaml .) $ | nindent 12 }}
-        {{- end }}
+            {{- tpl (toYaml .) $ | nindent 12 }}
+          {{- end }}
           ports:
             - name: http-port
               containerPort: {{ .Values.service.httpPort }}
               protocol: TCP
           volumeMounts:
+          {{- if and (.Values.configFileYaml) (ne .Values.configFileYaml "") }}
             - name: configuration
-              mountPath: /opt/bin/config.yaml
-              subPath: config.yaml
+              mountPath: /opt/bin/{{ .Values.configFileName }}
+              subPath: {{ .Values.configFileName }}
+          {{- end}}
             - name: data
-              mountPath: /share
+              mountPath: {{ .Values.rootPath }}
+          {{- with .Values.extraVolumeMounts }}
+            {{- tpl (toYaml .) $ | nindent 10 }}
+          {{- end }}
       volumes:
+      {{- if and (.Values.configFileYaml) (ne .Values.configFileYaml "") }}
         - name: configuration
           configMap:
             name: {{ template "webdav.fullname" . }}-config
             defaultMode: 0511
+      {{- end}}
         - name: data
         {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Values.persistence.existingClaim | default (include "webdav.fullname" .) }}
+            claimName: {{ tpl (.Values.persistence.existingClaim | default (include "webdav.fullname" .)) $ }}
         {{- else }}
           emptyDir: {}
         {{- end -}}
+        {{- with .Values.extraVolumes }}
+          {{- tpl (toYaml .) $ | nindent 10 }}
+        {{- end }}

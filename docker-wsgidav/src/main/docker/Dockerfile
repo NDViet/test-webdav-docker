@@ -1,14 +1,15 @@
 FROM ${dockerfile.based.image}
+LABEL authors="Happy TestOps <contact@ndviet.org>"
+LABEL application="WsgiDAV ${wsgidav.version}"
 
 #======================================
 # Add ENV
 #======================================
 ENV PIP_ROOT_USER_ACTION=ignore
-ENV CONFIG_FILE /opt/bin/config.yaml
+ENV CONFIG_FILE config.yaml
 ENV ROOT_PATH /share
 ENV SERVER cheroot
 ENV HOST 0.0.0.0
-ENV AUTHENTICATION anonymous
 ENV SERVER_PORT 8080
 
 #======================================
@@ -27,7 +28,7 @@ RUN apk add --no-cache --virtual .build-deps gcc libxslt-dev musl-dev py3-lxml p
 RUN  mkdir -p /var/run/supervisor /var/log/supervisor /opt/bin
 
 COPY supervisord.conf /etc/
-COPY config.yaml ${CONFIG_FILE}
+COPY config.yaml /opt/bin/${CONFIG_FILE}
 COPY entry_point.sh /opt/bin/
 COPY webdav.sh /opt/bin/
 

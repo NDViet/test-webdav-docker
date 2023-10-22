@@ -1,3 +1,4 @@
+{{- if and (.Values.configFileYaml) (ne .Values.configFileYaml "") }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -10,4 +11,5 @@ metadata:
     namespace: {{ .Release.Namespace }}
     heritage: {{ .Release.Service }}
 data:
-  config.yaml: {{- toYaml .Values.configs | nindent 4 -}}
+  config.yaml: {{- toYaml .Values.configFileYaml | nindent 4 -}}
+{{- end }}
