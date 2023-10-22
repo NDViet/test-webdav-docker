@@ -1,8 +1,6 @@
 apiVersion: v2
-name: webdav
-description: A Helm chart for Kubernetes
+name: ${wsgidav.image.name}
+description: A Helm chart for TestOps WebDAV Server
 type: application
-
-version: 0.1.0
-
-appVersion: "1.16.0"
+version: ${project.version}
+appVersion: "${wsgidav.version}"

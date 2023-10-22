@@ -51,7 +51,7 @@
                     <configuration>
                         <chartDirectory>${project.build.directory}/classes</chartDirectory>
                         <chartVersion>${project.version}</chartVersion>
-                        <outputDirectory>${project.build.directory}/helm/repo</outputDirectory>
+                        <outputDirectory>${project.parent.build.directory}/helm/repo</outputDirectory>
                         <useLocalHelmBinary>true</useLocalHelmBinary>
                         <autoDetectLocalHelmBinary>true</autoDetectLocalHelmBinary>
                         <lintStrict>true</lintStrict>
